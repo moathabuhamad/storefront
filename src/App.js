@@ -1,57 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import store from './Store-rtk/index.js'
+import { fetchProducts } from './Store-rtk/product-slice.js'
 import './App.css';
+import Cart from './Components/Layout/Cart.js'
+import Home from './Components/Layout/Home.js'
+import Breadcrumb from './Components/Layout/Breadcrumb.js'
+import Nav from './Components/Layout/Nav.js'
+import Footer from './Components/Layout/Footer.js'
 
 function App() {
+
+  useEffect(() => {
+    store.dispatch(fetchProducts())
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <Provider store={store}>
+      <div className="app">
+        <Router>
+          <Nav />
+          <Breadcrumb />
+          <Route exact path="/">
+            <Home />
+          </Route>
+          <Route exact path="/cart">
+            <Cart />
+          </Route>
+        </Router>
+      </div>
+      <Footer />
+    </Provider>
   );
 }
 
