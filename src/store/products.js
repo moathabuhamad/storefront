@@ -1,47 +1,44 @@
-const initialState = {
-};
+import { createSlice } from '@reduxjs/toolkit';
+import superagent from 'superagent';
 
-export default function products(state = initialState, action) {
-  switch (action.type) {
-    case 'GET_PRODUCTS':
-      return {...state,products:action.payload};
-    case 'INCREMENT_PRODUCTS':
+const api = 'https://storefront-api-mh.herokuapp.com';
+
+const productSlice = createSlice({
+  name: 'products',
+  initialState: {
+    products: [],
+  },
+  reducers: {
+    getProducts: (state, action) => {
+      state.products = action.payload;
+    },
+    incrementProduct: (state, action) => {
       let newProducts = state.products.map((prod) => {
         if (prod.id === action.payload) {
           prod.inventory++;
         }
         return prod;
       });
-      return { ...state, products: newProducts };
-    case 'DECREMENT_PRODUCTS':
+      state.products = newProducts;
+    },
+    decrementProduct: (state, action) => {
       let newProductz = state.products.map((prod) => {
         if (prod.id === action.payload) {
-          if(prod.inventory !== 0) prod.inventory--;
+          if (prod.inventory !== 0) prod.inventory--;
         }
         return prod;
       });
-      return { ...state, products: newProductz };
-    default:
-      return state;
-  }
-}
+      state.products = newProductz;
+    },
+  },
+});
 
-export const getProducts = () => {
-  return {
-    type: 'GET_PRODUCTS',
-  };
-};
+export default productSlice.reducer;
+export const { getProducts, incrementProduct, decrementProduct } =
+  productSlice.actions;
 
-export const incrementProduct = (id) => {
-  return {
-    type: 'INCREMENT_PRODUCTS',
-    payload: id,
-  };
-};
-
-export const decrementProduct = (id) => {
-  return {
-    type: 'DECREMENT_PRODUCTS',
-    payload: id,
-  };
+export const getProductsFromAPI = () => (dispatch, state) => {
+  return superagent.get(`${api}/products`).then((res) => {
+    dispatch(getProducts(res.body));
+  });
 };

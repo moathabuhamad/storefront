@@ -5,31 +5,32 @@ import Home from '@mui/icons-material/Home';
 import { connect } from 'react-redux';
 import { getActiveCatagory } from '../store/catagories';
 import { useEffect, useState } from 'react';
-import {getCatagoriesFromAPI, getProductsFromAPI} from '../store/actions'
+import { getCatagoriesFromAPI } from '../store/catagories';
+import { getProductsFromAPI } from '../store/products';
 function NavBar(props) {
-  const { getCatagoriesFromAPI,getActiveCatagory,getProductsFromAPI, catagories, cart } = props;
+  const {
+    getCatagoriesFromAPI,
+    getActiveCatagory,
+    getProductsFromAPI,
+    catagories,
+    cart,
+  } = props;
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    getCatagoriesFromAPI(value+1);
+    getCatagoriesFromAPI(value + 1);
   }, [value]);
-  console.log(catagories);
 
   return (
     <div className='flex items-center w-auto justify-between'>
-      
       <BottomNavigation
         showLabels
         value={99}
         className='w-full h-12 flex bg-transparent'
       >
-         <BottomNavigationAction
-        href='/'
-          label={'Home'}
-          icon={<Home/>}
-        />
+        <BottomNavigationAction href='/' label={'Home'} icon={<Home />} />
         <BottomNavigationAction
-        href='/cart'
+          href='/cart'
           label={`cart(${cart.numberOfItems})`}
           icon={<ShoppingCartIcon />}
         />
@@ -46,7 +47,7 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = {
   getActiveCatagory,
   getCatagoriesFromAPI,
-  getProductsFromAPI
+  getProductsFromAPI,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);
