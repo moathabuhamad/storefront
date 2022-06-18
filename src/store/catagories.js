@@ -1,29 +1,36 @@
-const initialState = {
+import { createSlice } from '@reduxjs/toolkit';
+import superagent from 'superagent';
 
+const api = 'https://storefront-api-mh.herokuapp.com';
+
+const catagoriesSlice = createSlice({
+  name: 'products',
+  initialState: {
+    catagories: [],
+    activeCatagory: {},
+  },
+  reducers: {
+    getCatagories: (state, action) => {
+      state.catagories = action.payload;
+    },
+    getActiveCatagory: (state, action) => {
+      let activeCatagory = state.catagories.find(
+        (catagory) => action.payload === catagory.id,
+      );
+      state.activeCatagory = activeCatagory;
+    },
+  },
+});
+
+
+export default catagoriesSlice.reducer;
+export const { getCatagories, getActiveCatagory } = catagoriesSlice.actions;
+
+export const getCatagoriesFromAPI = (value) => (dispatch, state) => {
+  return superagent.get(`${api}/catagories`).then((res) => {
+    dispatch(getCatagories(res.body));
+    if (value) {
+      dispatch(getActiveCatagory(value));
+    }
+  });
 };
-
-export default function catagories(state = initialState, action) {
-  switch (action.type) {
-    case 'GET_CATAGORIES':
-      console.log(action.payload)
-      return {...state,catagories:action.payload};
-    case 'GET_ACTIVE_CATAGORY':
-        let activeCatagory = state.catagories.find((catagory)=> action.payload === catagory.id)
-      return {...state,activeCatagory};
-    default:
-      return state;
-  }
-}
-
-export const getCatagories=()=>{
-return {
-    type:'GET_CATAGORIES'
-}
-}
-
-export const getActiveCatagory=(id)=>{
-return {
-    type:'GET_ACTIVE_CATAGORY',
-    payload: id
-}
-}

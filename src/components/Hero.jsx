@@ -14,8 +14,8 @@ import SimpleCart from './SimpleCart';
 import { decrementProduct } from '../store/products';
 import { When } from 'react-if';
 import { useEffect } from 'react';
-import { getProductsFromAPI,getCatagoriesFromAPI } from '../store/actions';
-import {Routes , Route} from 'react-router-dom'
+import { getCatagoriesFromAPI } from '../store/catagories';
+import { getProductsFromAPI } from '../store/products';
 import FastfoodIcon from '@mui/icons-material/Fastfood';
 import CheckroomIcon from '@mui/icons-material/Checkroom';
 import DevicesIcon from '@mui/icons-material/Devices';
@@ -25,33 +25,32 @@ import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 const Hero = (props) => {
   const [value, setValue] = React.useState(0);
 
-  const {getProductsFromAPI,getCatagoriesFromAPI} = props
+  const { getProductsFromAPI, getCatagoriesFromAPI } = props;
   useEffect(() => {
     getProductsFromAPI();
-    getCatagoriesFromAPI(value+1)
-  }, [getProductsFromAPI,value]);
+    getCatagoriesFromAPI(value + 1);
+  }, [getProductsFromAPI, value]);
 
   return (
     // Container
     <div className='flex flex-col items-center py-10 px-6 w-full h-full'>
       <SimpleCart />
       <div>
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        className='w-full h-12 flex bg-transparent'
-      >
-        <BottomNavigationAction  label='food' icon={<FastfoodIcon />} />
-        <BottomNavigationAction  label='cloths' icon={<CheckroomIcon />} />
-        <BottomNavigationAction  label='electronics' icon={<DevicesIcon />} />
-      </BottomNavigation>
+        <BottomNavigation
+          showLabels
+          value={value}
+          onChange={(event, newValue) => {
+            setValue(newValue);
+          }}
+          className='w-full h-12 flex bg-white my-4 rounded-md'
+        >
+          <BottomNavigationAction label='food' icon={<FastfoodIcon />} />
+          <BottomNavigationAction label='cloths' icon={<CheckroomIcon />} />
+          <BottomNavigationAction label='electronics' icon={<DevicesIcon />} />
+        </BottomNavigation>
       </div>
       <ActiveCatagory />
-      {/* Card */}
-      <div className='flex flex-wrap py-10 px-6'>
+      <div className='flex flex-wrap px-6'>
         {props.products?.map((item, index) => {
           if (item.catagoryId === props.active?.id) {
             return (
@@ -123,7 +122,7 @@ const mapDispatchToProps = {
   decrementProduct,
   getProductsFromAPI,
   addItem,
-  getCatagoriesFromAPI
+  getCatagoriesFromAPI,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Hero);
