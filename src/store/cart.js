@@ -4,10 +4,14 @@ const intitialState = {
   totalPrice: 0,
 };
 
-export default function cart(state = intitialState, action) {
+export default function cart(
+  state = JSON.parse(localStorage.getItem('cart')) || intitialState,
+  action,
+) {
   switch (action.type) {
     case 'INCREMENT_CART':
       let numberOfItems = state.numberOfItems + 1;
+
       return { ...state, numberOfItems: numberOfItems };
     case 'ADD_ITEM':
       let newItems = [...state.items];
@@ -24,6 +28,14 @@ export default function cart(state = intitialState, action) {
         newItems.push(foundItem);
         totalPrice += newItem.price;
       }
+      localStorage.setItem(
+        'cart',
+        JSON.stringify({
+          ...state,
+          items: newItems,
+          totalPrice: totalPrice,
+        }),
+      );
       return { ...state, items: newItems, totalPrice: totalPrice };
 
     case 'REMOVE_ITEM':
@@ -37,6 +49,7 @@ export default function cart(state = intitialState, action) {
       if (foundItem1.quantity == 0) {
         newItems1 = newItems1.filter((item) => item.id != action.payload);
       }
+
       return {
         ...state,
         items: newItems1,

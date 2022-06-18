@@ -11,16 +11,48 @@ import { connect } from 'react-redux';
 import { increment } from '../store/cart';
 import { addItem } from '../store/cart';
 import SimpleCart from './SimpleCart';
+import { decrementProduct } from '../store/products';
+import { When } from 'react-if';
+import { useEffect } from 'react';
+import { getProductsFromAPI,getCatagoriesFromAPI } from '../store/actions';
+import {Routes , Route} from 'react-router-dom'
+import FastfoodIcon from '@mui/icons-material/Fastfood';
+import CheckroomIcon from '@mui/icons-material/Checkroom';
+import DevicesIcon from '@mui/icons-material/Devices';
+
+import { BottomNavigation, BottomNavigationAction } from '@mui/material';
 
 const Hero = (props) => {
+  const [value, setValue] = React.useState(0);
+
+  const {getProductsFromAPI,getCatagoriesFromAPI} = props
+  useEffect(() => {
+    getProductsFromAPI();
+    getCatagoriesFromAPI(value+1)
+  }, [getProductsFromAPI,value]);
+
   return (
     // Container
     <div className='flex flex-col items-center py-10 px-6 w-full h-full'>
       <SimpleCart />
+      <div>
+      <BottomNavigation
+        showLabels
+        value={value}
+        onChange={(event, newValue) => {
+          setValue(newValue);
+        }}
+        className='w-full h-12 flex bg-transparent'
+      >
+        <BottomNavigationAction  label='food' icon={<FastfoodIcon />} />
+        <BottomNavigationAction  label='cloths' icon={<CheckroomIcon />} />
+        <BottomNavigationAction  label='electronics' icon={<DevicesIcon />} />
+      </BottomNavigation>
+      </div>
       <ActiveCatagory />
       {/* Card */}
       <div className='flex flex-wrap py-10 px-6'>
-        {props.products.map((item, index) => {
+        {props.products?.map((item, index) => {
           if (item.catagoryId === props.active?.id) {
             return (
               <Card
@@ -31,7 +63,7 @@ const Hero = (props) => {
                   <CardMedia
                     className='w-full h-52 object-cover'
                     component='img'
-                    image={item.img}
+                    image={item.image}
                   />
                   <CardContent
                     className='flex flex-col items-center'
@@ -46,6 +78,9 @@ const Hero = (props) => {
                     <Typography component='div' variant='h6'>
                       {item.price}$
                     </Typography>
+                    <Typography component='div' variant='h6'>
+                      stock: {item.inventory}
+                    </Typography>
                   </CardContent>
                   <Box
                     sx={{ display: 'flex', alignItems: 'center', px: 1, py: 1 }}
@@ -53,12 +88,18 @@ const Hero = (props) => {
                     <IconButton
                       aria-label='Add to cart'
                       onClick={() => {
-                        props.increment();
-                        props.addItem(item);
+                        if (item.inventory > 0) {
+                          props.increment();
+                          props.addItem(item);
+                          props.decrementProduct(item.id);
+                        }
                       }}
                     >
                       <AddShoppingCartIcon sx={{ height: 38, width: 38 }} />
                     </IconButton>
+                    <When condition={item.inventory === 0}>
+                      <p className='text-red-600'> out of stock </p>
+                    </When>
                   </Box>
                 </Box>
               </Card>
@@ -77,6 +118,12 @@ const mapStateToProps = (state) => ({
   active: state.catagories.activeCatagory,
 });
 
-const mapDispatchToProps = { increment, addItem };
+const mapDispatchToProps = {
+  increment,
+  decrementProduct,
+  getProductsFromAPI,
+  addItem,
+  getCatagoriesFromAPI
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(Hero);

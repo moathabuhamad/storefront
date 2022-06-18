@@ -3,16 +3,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { removeItem } from '../store/cart';
+import { incrementProduct } from '../store/products';
 
 const SimpleCart = (props) => {
   return (
     <div className=' font-semibold text-white bg-transparent rounded-md shadow-black shadow-md p-3 fixed right-0 top-[47px]'>
       {props.cart.map((item, index) => {
         return (
-          <div key={index} >
+          <div key={index}>
             <p>
               {item.name} {item.quantity}
-              <IconButton onClick={() => props.removeItem(item.id)}>
+              <IconButton
+                onClick={() => {
+                  props.removeItem(item.id);
+                  props.incrementProduct(item.id);
+                }}
+              >
                 <RemoveCircleIcon className='bg-red' />
               </IconButton>
             </p>
@@ -27,6 +33,6 @@ const mapStateToProps = (state) => ({
   cart: state.cart.items,
 });
 
-const mapDispatchToProps = { removeItem };
+const mapDispatchToProps = { removeItem, incrementProduct };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SimpleCart);
