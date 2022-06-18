@@ -1,42 +1,35 @@
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import FastfoodIcon from '@mui/icons-material/Fastfood';
-import CheckroomIcon from '@mui/icons-material/Checkroom';
-import DevicesIcon from '@mui/icons-material/Devices';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Home from '@mui/icons-material/Home';
 import { connect } from 'react-redux';
 import { getActiveCatagory } from '../store/catagories';
 import { useEffect, useState } from 'react';
-
-
+import {getCatagoriesFromAPI, getProductsFromAPI} from '../store/actions'
 function NavBar(props) {
-  const { getActiveCatagory, catagories, cart } = props;
+  const { getCatagoriesFromAPI,getActiveCatagory,getProductsFromAPI, catagories, cart } = props;
   const [value, setValue] = useState(0);
-  useEffect(() => {
-    getActiveCatagory(value + 1);
-  }, [value]);
 
+  useEffect(() => {
+    getCatagoriesFromAPI(value+1);
+  }, [value]);
+  console.log(catagories);
 
   return (
     <div className='flex items-center w-auto justify-between'>
-      <BottomNavigation
-        showLabels
-        value={value}
-        onChange={(event, newValue) => {
-          setValue(newValue);
-        }}
-        className='w-full h-12 flex bg-transparent'
-      >
-        <BottomNavigationAction label='food' icon={<FastfoodIcon />} />
-        <BottomNavigationAction label='cloths' icon={<CheckroomIcon />} />
-        <BottomNavigationAction label='electronics' icon={<DevicesIcon />} />
-      </BottomNavigation>
+      
       <BottomNavigation
         showLabels
         value={99}
         className='w-full h-12 flex bg-transparent'
       >
+         <BottomNavigationAction
+        href='/'
+          label={'Home'}
+          icon={<Home/>}
+        />
         <BottomNavigationAction
+        href='/cart'
           label={`cart(${cart.numberOfItems})`}
           icon={<ShoppingCartIcon />}
         />
@@ -52,6 +45,8 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = {
   getActiveCatagory,
+  getCatagoriesFromAPI,
+  getProductsFromAPI
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(NavBar);
